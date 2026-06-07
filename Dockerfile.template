@@ -1,0 +1,16 @@
+#FROM python:3.12-slim-bookworm
+FROM python:3.12-bookworm
+
+# Install git so we can clone the repository
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Clone the repository directly into the current working directory
+RUN git clone https://github.com/pyMC-dev/pyMC_Repeater.git .
+
+# Entrypoint sequence: check disk space, then keep the container alive for terminal access
+CMD ["sh", "-c", "df -h && sleep 300"]

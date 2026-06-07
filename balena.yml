@@ -1,0 +1,29 @@
+name: balena-pymc-repeater
+joinable: false
+type: sw.application
+description: >-
+  PyMC Repeater management application deployed via balena cloud
+post-provisioning: >-
+  ### Using balena-pymc-repeater:
+  Edit configuration files and push to your fleet.
+
+  ### Initial configuration:
+  See instructions in the README for setup details
+assets:
+  repository: 
+    type: blob.asset
+    data:
+      url: 'https://github.com/pinztrek/balena-pymc-repeater'
+  logo:
+    type: blob.asset
+    data:
+      url: >-
+        https://raw.githubusercontent.com/pinztrek/balena-pymc-repeater/main/assets/images/balena-icon.png
+data:
+  defaultDeviceType: raspberrypi3-64
+  supportedDeviceTypes:
+    - raspberrypi0-2w-64
+    - raspberrypi3-64
+    - raspberrypi400-64
+    - raspberrypi4-64
+version: 1.0.0
