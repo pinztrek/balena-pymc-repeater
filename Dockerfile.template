@@ -10,7 +10,8 @@ ARG YQ_VERSION=v4.40.5
 ENV INSTALL_DIR=/opt/pymc_repeater \
     CONFIG_DIR=/etc/pymc_repeater \
     DATA_DIR=/var/lib/pymc_repeater \
-    HOME_DIR=/home/${USER} \
+    #HOME_DIR=/home/${USER} \
+    HOME_DIR=$DATA_DIR \
     PATH=/home/${USER}/.local/bin:${PATH} \
     PYTHONUNBUFFERED=1 \
     SETUPTOOLS_SCM_PRETEND_VERSION_FOR_PYMC_REPEATER=${PACKAGE_VERSION} \
@@ -67,8 +68,8 @@ RUN chown -R "$USER":"$GROUP" ${INSTALL_DIR} ${CONFIG_DIR} ${DATA_DIR} ${HOME_DI
 
 # --- Balena Persistence Realignment ---
 # Setup fallback internal app configs to redirect cleanly to the config volume
-RUN mkdir -p /etc/pymc_repeater/.pymc_repeater \
-    && ln -s /etc/pymc_repeater/.pymc_repeater /root/.pymc_repeater
+#RUN mkdir -p /etc/pymc_repeater/.pymc_repeater \
+#    && ln -s /etc/pymc_repeater/.pymc_repeater /root/.pymc_repeater
 
 # Inject vi-mode editing and the standard long-list alias globally into the system bash configuration
 RUN echo "set -o vi" >> /etc/bash.bashrc \
@@ -76,6 +77,8 @@ RUN echo "set -o vi" >> /etc/bash.bashrc \
 
 # Not needed with Balena?
 EXPOSE 8000
+
+USER ${USER}
 
 # Keeps the container alive for terminal access and debugging as requested
 # Check for config.yaml at boot; if missing, copy the example template, then show disk space and sleep
