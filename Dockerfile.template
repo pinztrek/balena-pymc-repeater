@@ -57,7 +57,7 @@ RUN pip install --no-cache-dir .
 
 # Install runtime and compilation dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    vim-tiny \
+    vim.tiny \
     && rm -rf /var/lib/apt/lists/*
 
 # Clean up ownership for the mapped directories
