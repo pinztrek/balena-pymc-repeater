@@ -28,7 +28,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
     && rm -rf /var/lib/apt/lists/*
 
 # Install yq using Balena's native architecture translation variable
-RUN wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_%%BALENA_ARCH%%" \
+# Fetch yq, safely translating the 'aarch64' string to 'arm64' for the GitHub release filename
+RUN BALENA_ARCH_CLEAN="%%BALENA_ARCH%%" \
+    && if [ "${BALENA_ARCH_CLEAN}" = "aarch64" ]; then YQ_ARCH="arm64"; else YQ_ARCH="${BALENA_ARCH_CLEAN}"; fi \
+    && wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${YQ_ARCH}" \
     && chmod +x /usr/local/bin/yq
 
 # Create system user and groups
