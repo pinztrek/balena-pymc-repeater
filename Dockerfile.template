@@ -1,8 +1,11 @@
 # --- Stage 1: Build & Install ---
 FROM python:3.12-bookworm AS builder
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Build-time arguments
 ARG YQ_VERSION=v4.40.5
+
 
 # Install build dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
@@ -19,7 +22,7 @@ RUN git clone https://github.com/pyMC-dev/pyMC_Repeater.git . \
     && pip install --no-cache-dir --user .
 
 # --- Stage 2: Runtime ---
-FROM python:3.12-slim
+FROM python:3.12-bookworm-slim
 
 # Runtime environment variables
 ENV USER=repeater \
@@ -27,7 +30,8 @@ ENV USER=repeater \
     PUID=15888 \
     PGID=15888 \
     PATH=/home/repeater/.local/bin:$PATH \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies (yq, utils)
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
