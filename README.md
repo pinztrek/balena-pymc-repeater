@@ -6,12 +6,13 @@ This project provides a containerized environment for running and managing `pymc
 
 ## The goal for this project is to be able to stand up a `pymc_repeater` container and completely manage it via balenaCloud with minimal hand-editing of config files and no container-level code changes.
 
+Specifically, no arcane docker/linux knowledge is required (though some linux awareness sometimes helps for advanced changes). But it's close to turnkey. 
+
 ## Key Features:
-* **Simplified Management:** Utilizes environment variables to configure behavior and application settings. 
+* **Simplified Management:** Utilizes environment variables to configure behavior and application settings for the corner cases where you don't want to use the pymc web gui. 
 * **Automatic Deployments:** Release and dev branches, will automatically update unless you pin to a specific release
 * **Persistent Configuration:** Configuration file structures are persistent and read/write, ensuring settings survive updates.
 * **Template-Based Setup:** If an existing `config.yaml` is not found, one is automatically created from `config.yaml.example`.
-* **Flexible Configuration:** Supports device-specific presets and easy selection of supported configurations.
 * **Maintenance & Debug Mode:** Includes support for debugging and terminal access to the container for manual adjustments when needed.
 * **2 stage docker build:** Builds the code, then deploys to a minimal docker image. Run image is only ~256MB!
 * **Can be manually edited via Balena terminal** Nano, vi, etc are available to edit config files in the balena terminal
@@ -39,6 +40,14 @@ This project provides a containerized environment for running and managing `pymc
 ## 5. Power up your device
 * The environment will download and start up automatically.
 * Once running, you can access the container terminal via the balenaCloud dashboard to run commands or inspect logs.
+* You'll want to note the local IP address on the dashboard if you do not know it already
+
+## 6. Access the PYMC_repeater web control plane GUI
+* Using your browser navigate to: **http://your_IP_addr:8000
+* The PYMC web gui should load and start the setup dialog. Work through this, selecting radio, region, etc. Note the current build dropped the Nebrahat, which I will readd. 
+* When it's complete, PYMC will restart the container. There is a sleep delay when PYMC exits which will need to expire, or you can hit the recycle button on the balena dashboard to restart the container. 
+* It'll come up running the gui, and you should start seeing packets if all is set correctly
+* If you need to adjust the config, use the terminal, select the pymc container, and it will give you a shell prompt. All editable files should be accessible as the _repeater_ user, but sudo is available if needed. 
 
 # Controlling Behavior with Env Variables:
 ### (Under Construction)
@@ -83,6 +92,10 @@ The application expects a `config.yaml` file. The container is designed to check
 
 # Release versions
 Any updates for *balena-pymc-repeater* will be automatically deployed to your devices. If an update creates issues, you can pin to a prior release using the balena releases page.
+
+# Credit:
+*  [LLoyd pymc-dev](https://github.com/pymc-dev) The excellent pymc_repeater project itself is why we are here. [https://github.com/pymc-dev/pyMC_Repeater](https://github.com/pymc-dev/pyMC_Repeater)
+*  [Michael Gillet's](https://github.com/migillett) (migillett) docker contribution to the pymc_repeater code [https://github.com/migillett/pyMC_Repeater](https://github.com/migillett/pyMC_Repeater) informed inital prototype of this balena based project. There are still tidbits leveraged in the build. 
 
 ---
 *Maintained by [pinztrek](https://github.com/pinztrek/balena-pymc-repeater)*
