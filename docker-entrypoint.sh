@@ -23,6 +23,10 @@ if [ ! -f /etc/pymc_repeater/config.yaml ]; then
     sudo chown repeater:repeater /etc/pymc_repeater/config.yaml
 fi
 
+cd /etc/pymc_repeater
+
 echo "docker-entrypoint.sh starting app"
 # Now run the application
-exec "$@"
+#exec "$@"
+pymc-repeater ; sleep 300
+echo "docker-entrypoint.sh exit"

@@ -100,4 +100,10 @@ USER ${USER}
 # Check for config.yaml at boot; if missing, copy the example template, then show disk space and sleep
 #CMD ["sh", "-c", "[ ! -f /etc/pymc_repeater/config.yaml ] && cp /opt/pymc_repeater/config.yaml.example /etc/pymc_repeater/config.yaml; df -h && sleep 300"]
 #CMD ["pymc-repeater", "--config", "/etc/pymc_repeater/config.yaml]
-CMD ["sh", "-c", "[ ! -f /etc/pymc_repeater/config.yaml ] && cp /opt/pymc_repeater/config.yaml.example /etc/pymc_repeater/config.yaml; pymc-repeater --config /etc/pymc_repeater/config.yaml || sleep infinity"]
+
+# 1. Set the entrypoint script
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# 2. Set the default command (the arguments to the script)
+#CMD ["pymc-repeater", "--config", "/etc/pymc_repeater/config.yaml"]
+#CMD ["sh", "-c", "[ ! -f /etc/pymc_repeater/config.yaml ] && cp /opt/pymc_repeater/config.yaml.example /etc/pymc_repeater/config.yaml; pymc-repeater --config /etc/pymc_repeater/config.yaml || sleep infinity"]
