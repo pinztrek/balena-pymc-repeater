@@ -88,8 +88,10 @@ EXPOSE 8000
 # Copy the example config to the target directory during the build
 #RUN cp ${INSTALL_DIR}/config.yaml.example ${CONFIG_DIR}/config.yaml
 
-RUN mv docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
-    && chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Copy the script and make it executable
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod a+rx /usr/local/bin/docker-entrypoint.sh
 
 USER ${USER}
 
