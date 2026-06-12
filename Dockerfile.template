@@ -38,7 +38,8 @@ RUN BALENA_ARCH_CLEAN="%%BALENA_ARCH%%" \
 
 # Create system user and groups
 RUN groupadd --gid "$PGID" "$GROUP" \
-    && useradd --uid "$PUID" --gid "$PGID" --home-dir "$HOME_DIR" --create-home --shell /usr/bin/bash "$USER"
+    && useradd --uid "$PUID" --gid "$PGID" --home-dir "$HOME_DIR" --create-home --shell /usr/bin/bash "$USER" \
+    && usermod -aG gpio "$USER"
 
 # Create target application and volume directories
 RUN mkdir -p ${INSTALL_DIR} ${CONFIG_DIR} ${DATA_DIR}

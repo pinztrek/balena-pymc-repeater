@@ -5,6 +5,7 @@ services:
       context: .
     #network_mode: host
     privileged: true
+    gpio: true
     devices:
       - "/dev/bus/usb:/dev/bus/usb"
       #- /dev/bus/usb/002:/dev/bus/usb/002
@@ -26,6 +27,7 @@ services:
       - data:/var/lib/pymc_repeater
     group_add:
       - "plugdev"
+      - "gpio"
     restart: always
 
 
