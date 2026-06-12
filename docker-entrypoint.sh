@@ -1,4 +1,5 @@
 #!/bin/bash
+echo "docker-entrypoint.sh started"
 
 # Change ownership of GPIO devices to the 'gpio' group
 # and grant read/write access to that group.
@@ -13,6 +14,8 @@ if [ -e /dev/gpiomem ]; then
     sudo chmod g+rw /dev/gpiomem
 fi
 
+ls -al /dev/gpi*
+
 # Seed the configuration if missing
 if [ ! -f /etc/pymc_repeater/config.yaml ]; then
     echo "Initializing default configuration..."
@@ -20,5 +23,6 @@ if [ ! -f /etc/pymc_repeater/config.yaml ]; then
     sudo chown repeater:repeater /etc/pymc_repeater/config.yaml
 fi
 
+echo "docker-entrypoint.sh starting app"
 # Now run the application
 exec "$@"
