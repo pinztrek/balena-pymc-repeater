@@ -9,7 +9,8 @@ ARG YQ_VERSION=v4.40.5
 
 
 # Install build dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     git \
     libffi-dev \
     libusb-1.0-0-dev \
@@ -35,12 +36,14 @@ ENV USER=repeater \
     DEBIAN_FRONTEND=noninteractive
 
 # Install runtime dependencies (yq, utils)
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-install-recommends \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update 
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     jq \
     vim.tiny \
     iproute2 \
     net-tools \
     sudo \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Create system user, group, and permissions
