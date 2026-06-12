@@ -18,6 +18,32 @@ fi
 
 ls -al /dev/gpi*
 
+if [[ "$PYMC_DEBUG" ]] && [[ ! "$PYMC_DELAY" ]]; then
+        PYMC_DELAY=180
+fi
+
+if [[ ! "$PYMC_DELAY" ]]; then
+        PYMC_DELAY=5
+fi
+
+cfgdir="/etc/pymc_repeater"
+installdir="/opt/pymc_repeater"
+
+
+if [[ "$PYMC_CLEAN" ]]; then
+        echo "Nuke $rundir files"
+        rm -rf $rundir/repeat* $rundir/.config
+        PYMC_RESET=1
+fi
+
+if [[ "$PYMC_RESET" ]]; then
+        echo "Save Old Config in config.last"
+        cp "$cfgdir"/config.yaml "$cfgdir"/config.last
+        echo "Install default config.yaml"
+        cp "$installdir"/config.yaml.example "$cfgdir"/config.yaml
+fi
+
+
 # Seed the radio settings if missing
 if [ ! -f /var/lib/pymc_repeater/radioi-settings.json ]; then
     echo "Install radio files..."
@@ -36,5 +62,5 @@ cd /etc/pymc_repeater
 echo "docker-entrypoint.sh starting app"
 # Now run the application
 #exec "$@"
-pymc-repeater ; sleep 30
+pymc-repeater ; sleep $PYMC_DELAY
 echo "docker-entrypoint.sh exit"

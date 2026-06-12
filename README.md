@@ -54,13 +54,12 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 Set these via the balenaCloud dashboard for your fleet or specific device to configure or manage:
 
 ***Working***
-* none yet! :-)
+* **PYMC_RESET:** Set to `1` to restore to a default config.yaml, will trigger setup menu. Does not overwrite databases
+* **PYMC_CLEAN:** Set to `1` to restore wipe all config / data and start fresh
+* **PYMC_DEBUG:** Set to `1` to enable a 180-second sleep (useful for terminal access/debugging).
+* **PYMC_DELAY:** Set to desired sleep period (useful for terminal access/debugging). Overrides defaul 5 second sleep when _pymc_repeater_ exits.
 
 ***Planned***
-* **DEBUG:** Set to `1` to enable a default 300-second sleep (useful for terminal access/debugging).
-* **SLEEP:** Set to desired sleep period (useful for terminal access/debugging). Overrides defaul 60 second sleep.
-* **RESET:** Set to `1` to restore to a default config.yaml, will trigger setup menu. Does not overwrite databases
-* **CLEAN:** Set to `1` to restore wipe all config / data and start fresh
 * **KEY:** Set to desired key from existing config, sets as key in config.yaml
 * **OWNER:** Set to desired owner string, stores in config.yaml
 * **NODENAME:** Set to desired name string, stores in config.yaml
