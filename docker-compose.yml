@@ -1,27 +1,24 @@
 version: '2.1'
+
 services:
   pymc-repeater:
-    build:
-      context: .
-    #network_mode: host
+    build: .
     privileged: true
-    gpio: true
-    devices:
-      - "/dev/bus/usb:/dev/bus/usb"
-      #- /dev/bus/usb/002:/dev/bus/usb/002
-      # SPI DEVICES (Your path may differ)
-      - '/dev/spidev0.0'
-      - '/dev/gpiochip0'
-    # SPI DEVICES PERMISSIONS
     cap_add:
       - SYS_RAWIO
+    devices:
+      - "/dev/bus/usb:/dev/bus/usb"
+      - "/dev/spidev0.0:/dev/spidev0.0"
+      - "/dev/gpiochip0:/dev/gpiochip0"
     ports:
-      - '8000:8000'  # Maps port 8000 on the host Pi to port 8000 inside the container
-      - '8080:8080'  # Maps port 8080 on the host Pi to port 8080 inside the container
+      - "8000:8000"
+      - "8080:8080"
     labels:
       io.balena.features.dbus: '1'
       io.balena.features.supervisor-api: '1'
       io.balena.features.balena-api: '1'
+      # Balena uses this label to enable GPIO access
+      io.balena.features.gpio: '1'
     volumes:
       - config:/etc/pymc_repeater
       - data:/var/lib/pymc_repeater
@@ -29,7 +26,6 @@ services:
       - "plugdev"
       - "gpio"
     restart: always
-
 
 volumes:
   config:
