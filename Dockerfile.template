@@ -81,10 +81,11 @@ RUN echo "set -o vi" >> /etc/bash.bashrc \
 # Not needed with Balena?
 EXPOSE 8000
 
-USER ${USER}
-
 # Copy the example config to the target directory during the build
 RUN cp ${INSTALL_DIR}/config.yaml.example ${CONFIG_DIR}/config.yaml
+
+USER ${USER}
+
 
 # Keeps the container alive for terminal access and debugging as requested
 # Check for config.yaml at boot; if missing, copy the example template, then show disk space and sleep
