@@ -71,6 +71,8 @@ COPY --from=builder /app/config.yaml.example /opt/pymc_repeater
 RUN mkdir -p /opt/pymc_repeater /etc/pymc_repeater /var/lib/pymc_repeater \
     && chown -R repeater:repeater /opt/pymc_repeater /etc/pymc_repeater /var/lib/pymc_repeater 
 
+RUN ls -al /etc/pymc_repeater
+
 # Install yq 
 RUN BALENA_ARCH_CLEAN="%%BALENA_ARCH%%" \
     && if [ "${BALENA_ARCH_CLEAN}" = "aarch64" ]; then YQ_ARCH="arm64"; else YQ_ARCH="${BALENA_ARCH_CLEAN}"; fi \

@@ -27,8 +27,12 @@ if [[ ! "$PYMC_DELAY" ]]; then
 fi
 echo "delay set to $PYMC_DELAY"
 
+
 cfgdir="/etc/pymc_repeater"
 installdir="/opt/pymc_repeater"
+rundir="/opt/pymc_repeater"
+
+sudo chown -R repeater:repeater $cfgdir
 
 
 if [[ "$PYMC_CLEAN" ]]; then
