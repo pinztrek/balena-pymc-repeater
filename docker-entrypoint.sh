@@ -25,6 +25,7 @@ fi
 if [[ ! "$PYMC_DELAY" ]]; then
         PYMC_DELAY=5
 fi
+echo "delay set to $PYMC_DELAY"
 
 cfgdir="/etc/pymc_repeater"
 installdir="/opt/pymc_repeater"
@@ -45,7 +46,7 @@ fi
 
 
 # Seed the radio settings if missing
-if [ ! -f /var/lib/pymc_repeater/radioi-settings.json ]; then
+if [ ! -f /var/lib/pymc_repeater/radio-settings.json ]; then
     echo "Install radio files..."
     sudo cp /opt/pymc_repeater/radio* /var/lib/pymc_repeater
     sudo chown repeater:repeater /var/lib/pymc_repeater/radio*
@@ -62,5 +63,5 @@ cd /etc/pymc_repeater
 echo "docker-entrypoint.sh starting app"
 # Now run the application
 #exec "$@"
-pymc-repeater ; sleep $PYMC_DELAY
+pymc-repeater ; echo "PYMC exited, sleeping $PYMC_DELAY seconds"; sleep $PYMC_DELAY
 echo "docker-entrypoint.sh exit"
