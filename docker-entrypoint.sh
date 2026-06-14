@@ -126,7 +126,7 @@ fi
 
 if [[ "$READONLY" ]]; then
     echo "Set READONLY to $READONLY"
-    yq -i '.security.allow_read_only = env(READONLY)' config.yaml
+    yq -i '.repeater.security.allow_read_only = env(READONLY)' config.yaml
 fi
 
 if [[ "$UNSCOPED" ]]; then
