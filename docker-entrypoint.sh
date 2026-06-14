@@ -134,6 +134,16 @@ if [[ "$ADVERT" ]]; then
     yq -i '.repeater.send_advert_interval_hours = env(ADVERT)' config.yaml
 fi
 
+if [[ "$ADAPTIVE" ]]; then
+    echo "Set ADAPTIVE to $ADAPTIVE"
+    yq -i '.repeater.advert_adaptive.enabled = env(ADAPTIVE)' config.yaml
+fi
+
+if [[ "$LIMIT" ]]; then
+    echo "Set LIMIT to $LIMIT"
+    yq -i '.repeater.advert_rate_limit.enabled = env(LIMIT)' config.yaml
+fi
+
 if [[ "$PENALTY" ]]; then
     echo "Set PENALTY to $PENALTY"
     yq -i '.repeater.advert_penalty_box.enabled = env(PENALTY)' config.yaml
