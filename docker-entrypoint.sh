@@ -11,6 +11,16 @@ if [ -e /dev/gpiochip0 ]; then
     sudo chmod a+rw /dev/gpiochip*
 fi
 
+# Change ownership of SPI devices to the 'gpio' group
+# and grant read/write access to that group.
+if [ -e /dev/spidev0.0 ]; then
+    echo "override spi groups..."
+    sudo chgrp gpio /dev/spidev*
+    #sudo chmod g+rw /dev/spidev*
+    # should not need this, but debugging perms
+    sudo chmod a+rw /dev/spi*
+fi
+
 # If you also need access to gpiomem
 if [ -e /dev/gpiomem ]; then
     echo "override gpiomem groups..."
