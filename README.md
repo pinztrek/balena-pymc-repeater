@@ -66,22 +66,30 @@ Set these via the balenaCloud dashboard for your fleet or specific device to con
 * **NODENAME:** Set to desired node_name string, stores in config.yaml
 * **LAT:** Set to desired lattitude string, stores in config.yaml
 * **LON:** Set to desired longitude string, stores in config.yaml
-* **KEY** Set to desired identy key (repeater.identiy_key)
+* **KEY** Set to desired identy key (repeater.identiy_key) (uses same format as the convert script)
 * **MAXFLOODHOPS** Set to desired hop limit, (repeater.max_flood_hops)
+* **ADVERT** Set to # hours for advert interval (repeater.send_advert_interval_hours)
+* **ADAPTIVE** Set to true to enable adaptive advert limit, (repeater.advert_adaptive.enabled.)
+* **LIMITING** Set to true to enable advert limiting, (repeater.advert_rate_limit.enabled)
+* **PENALTY** Set to true to enable advert penalty box, (repeater.advert_penalty_box.enable)
 * **MAXCLIENTS** Set to increase or limit the number of web clients
 * **ADMIN** Set admin pw (repeater.security.admin_password))
 * **GUEST** Set guest pw (repeater.security.guest_password)
-* **READONLY** Set to enable read only access (security.allow_read_only)
-* **UNSCOPED** Set to limit unscoped forwarding (mesh.unscoped_flood_allow)
-* **PATHHASH** Set to change path hash # of bytes (mesh.path_hash_mode) default is 1 for 2 byte
+* **READONLY** Set to true to read only access (security.allow_read_only)
+* **UNSCOPED** Set to true to enable unscoped forwarding (mesh.unscoped_flood_allow)
+* **PATHHASH** Set to 0 or 1 change path hash # of bytes (mesh.path_hash_mode) default is 1 for 2 byte
 * **TXDELAY** Set to change TX delay factor (delays.tx_delay_factor) default is 1.25
 * **IATA** set for broker airport code reporting (mqtt_brokers,iata_code)
-* **EMAIL** Set for broker email (req'd)  (mqtt_brokers.email)
+* **EMAIL** Set for broker email (normally req'd for mqtt)  (mqtt_brokers.email)
 
 
 ***Planned***
-* **REGION:** Set to desired region radio preset, stores in config.yaml
+* **REGION:** Set to desired region scope (may be a string)
 * broker setup
+
+***TBD***
+* **RADIOREGION:** Set to desired region radio preset, stores in config.yaml
+* **RADIO:** Set to desired radio preset, stores in config.yaml
 
 **Notes:**
 * setting the admin password will prevent the setup dialog from running! You'll need to setup everything manually like radio, region, etc. 
