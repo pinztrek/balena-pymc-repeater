@@ -1,4 +1,3 @@
-# 🚧 UNDER CONSTRUCTION 🚧
 
 # <kbd><img src="assets/images/balena-icon.png" alt="balena.io logo" width="60" style="border-radius:45%"/></kbd> <kbd><img src="assets/images/pymc.png" alt="pymc_repeater logo" width="60" style="border-radius:45%" /></kbd> balena-pymc-repeater
 
@@ -18,8 +17,9 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 * **Can be manually edited via Balena terminal** Nano, vi, etc are available to edit config files in the balena terminal
 
 ## Current Status:
-* **v0.5 Beta** Operation, key variables supported in addition to web/manual config
+* **v0.5 Beta** PYMC Operational, key variables supported in addition to web/manual config
 
+# 🚧 UNDER CONSTRUCTION 🚧
 * **dev branch** adding more obscure variable supoort in addition to web/manual config
 
 # Usage:
