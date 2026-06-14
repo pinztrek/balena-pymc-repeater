@@ -18,9 +18,9 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 * **Can be manually edited via Balena terminal** Nano, vi, etc are available to edit config files in the balena terminal
 
 ## Current Status:
-* **v0.5 Alpha** Runs successfully. Only manual config via web or config.yaml
+* **v0.5 Beta** Operation, key variables supported in addition to web/manual config
 
-* **dev branch** adding key variable support, refining run script
+* **dev branch** adding more obscure variable supoort in addition to web/manual config
 
 # Usage:
 
@@ -39,6 +39,7 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 
 ## 5. Power up your device
 * The environment will download and start up automatically.
+* The first time it boots it has to download the full OS, so it can take a while. Later updates will be faster. 
 * Once running, you can access the container terminal via the balenaCloud dashboard to run commands or inspect logs.
 * You'll want to note the local IP address on the dashboard if you do not know it already
 
