@@ -19,7 +19,7 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 ## Current Status:
 * **v0.5 Beta** PYMC Operational, key variables supported in addition to web/manual config
 
-# 🚧 UNDER CONSTRUCTION 🚧
+### 🚧 UNDER CONSTRUCTION 🚧
 * **dev branch** adding more obscure variable supoort in addition to web/manual config
 
 # Usage:
@@ -52,6 +52,8 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 
 # Controlling Behavior with Env Variables:
 ### (Under Construction)
+Balena environment variables can manage most config items, eleminating the need for editing config.yaml. 
+
 Set these via the balenaCloud dashboard for your fleet or specific device to configure or manage:
 
 ***Working***
@@ -78,12 +80,10 @@ Set these via the balenaCloud dashboard for your fleet or specific device to con
 
 ***Planned***
 * **REGION:** Set to desired region radio preset, stores in config.yaml
-* **PASSWORD:** Set to desired admin panel password, stores in config.yaml
+* broker setup
 
 **Notes:**
-* setting the password will prevent the setup dialog from running! You'll need to setup everything manually like radio, region, etc. 
-Balena Device or Fleet environment variables can be used to set configuration and change behavior:
-
+* setting the admin password will prevent the setup dialog from running! You'll need to setup everything manually like radio, region, etc. 
 * Any which impact config.yaml are executed prior to startup of _pymc_repeater_
 
 # Configuration:

@@ -68,6 +68,7 @@ COPY --from=builder /app/convert* /usr/local/bin/
 # Copy config files
 COPY --from=builder /app/radio* /opt/pymc_repeater/
 COPY --from=builder /app/config.yaml.example /opt/pymc_repeater
+RUN sed -i 's/\(tx_delay_factor:\) 1.0/\1 1.25/' /opt/pymc_repeater/config.yaml.example
 
 # Create directories and set ownership
 RUN mkdir -p /opt/pymc_repeater /etc/pymc_repeater /var/lib/pymc_repeater \
