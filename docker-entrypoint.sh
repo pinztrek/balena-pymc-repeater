@@ -81,6 +81,7 @@ cd /etc/pymc_repeater
 if [[ "$OWNER" ]]; then
     echo "Set owner_info to $OWNER"
     yq -i '.repeater.owner_info = env(OWNER)' config.yaml
+    yq -i '.mqtt_brokers.owner = env(OWNER)' config.yaml
 fi
 
 if [[ "$NODE_NAME" ]]; then
@@ -98,6 +99,58 @@ if [[ "$LON" ]]; then
     yq -i '.repeater.longitude = env(LON)' config.yaml
 fi
 
+if [[ "$KEY" ]]; then
+    echo "Set KEY to $KEY"
+    yq -i '.repeater.identiy_key = env(KEY)' config.yaml
+fi
+
+if [[ "$MAXFLOODHOPS" ]]; then
+    echo "Set MAXFLOODHOPS to $MAXFLOODHOPS"
+    yq -i '.repeater.max_flood_hops = env(MAXFLOODHOPS)' config.yaml
+fi
+
+if [[ "$MAXCLIENTS" ]]; then
+    echo "Set MAXCLIENTS to $MAXCLIENTS"
+    yq -i '.repeater.security.max_clients = env(MAXCLIENTS)' config.yaml
+fi
+
+if [[ "$GUEST" ]]; then
+    echo "Set GUEST to $GUEST"
+    yq -i '.repeater.security.guest_password = env(GUEST)' config.yaml
+fi
+
+if [[ "$READONLY" ]]; then
+    echo "Set READONLY to $READONLY"
+    yq -i '.security.allow_read_only = env(READONLY)' config.yaml
+fi
+
+if [[ "$UNSCOPED" ]]; then
+    echo "Set UNSCOPED to $UNSCOPED"
+    yq -i '.mesh.unscoped_flood_allow = env(UNSCOPED)' config.yaml
+fi
+
+if [[ "$PATHHASH" ]]; then
+    echo "Set PATHHASH to $PATHHASH"
+    yq -i '.mesh.path_hash_mode = env(PATHHASH)' config.yaml
+fi
+
+if [[ "$TXDELAY" ]]; then
+    echo "Set TXDELAY to $TXDELAY"
+    yq -i '.delays.tx_delay_factor = env(TXDELAY)' config.yaml
+fi
+
+if [[ "$IATA" ]]; then
+    echo "Set IATA to $IATA"
+    yq -i '.mqtt_brokers.iata_code = env(IATA)' config.yaml
+fi
+
+if [[ "$EMAIL" ]]; then
+    echo "Set EMAIL to $EMAIL"
+    yq -i '.mqtt_brokers.email = env(EMAIL)' config.yaml
+fi
+
+
+cd /etc/pymc_repeater
 
 echo "docker-entrypoint.sh starting app"
 # Now run the application
