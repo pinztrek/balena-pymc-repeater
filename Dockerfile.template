@@ -88,7 +88,7 @@ COPY docker-entrypoint.sh /etc/pymc_repeater/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /etc/pymc_repeater/docker-entrypoint.sh
 
-USER repeater
+#USER repeater
 WORKDIR /opt/pymc_repeater
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
