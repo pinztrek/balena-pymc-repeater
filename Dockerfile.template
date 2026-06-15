@@ -55,6 +55,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     wget \
     procps \
     openssh-client \
+    kmod \
+    gpiod \
+    libgpiod-dev \
+    i2c-tools \
+    pciutils \
+    usbutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Create system user, group, and permissions
