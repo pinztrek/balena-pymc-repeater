@@ -61,7 +61,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     i2c-tools \
     pciutils \
     usbutils \
+    openssh-server \
     && rm -rf /var/lib/apt/lists/*
+
+# Setup sshd
+RUN mkdir /var/run/sshd && \
+    sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config && \
+    echo "AllowUsers repeater" >> /etc/ssh/sshd_config
+
 
 # Create system user, group, and permissions
 RUN groupadd --gid "$PGID" "$GROUP" \

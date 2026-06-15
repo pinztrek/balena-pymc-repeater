@@ -184,6 +184,8 @@ if [[ "$EMAIL" ]]; then
     yq -i '.mqtt_brokers.email = env(EMAIL)' config.yaml
 fi
 
+# start sshd
+sudo /usr/sbin/sshd 
 
 cd /etc/pymc_repeater
 

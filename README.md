@@ -66,6 +66,9 @@ Set these via the balenaCloud dashboard for your fleet or specific device to con
 * **NODENAME:** Set to desired node_name string, stores in config.yaml
 * **LAT:** Set to desired lattitude string, stores in config.yaml
 * **LON:** Set to desired longitude string, stores in config.yaml
+* **IATA** set for broker airport code reporting (mqtt_brokers,iata_code)
+
+_Working Advanced_ ( Typically only used for managing fleets of nodes remotely)
 * **KEY** Set to desired identy key (repeater.identiy_key) (uses same format as the convert script)
 * **MAXFLOODHOPS** Set to desired hop limit, (repeater.max_flood_hops)
 * **ADVERT** Set to # hours for advert interval (repeater.send_advert_interval_hours)
@@ -73,13 +76,12 @@ Set these via the balenaCloud dashboard for your fleet or specific device to con
 * **LIMITING** Set to true to enable advert limiting, (repeater.advert_rate_limit.enabled)
 * **PENALTY** Set to true to enable advert penalty box, (repeater.advert_penalty_box.enable)
 * **MAXCLIENTS** Set to increase or limit the number of web clients
-* **ADMIN** Set admin pw (repeater.security.admin_password))
+* **ADMIN** Set admin pw (repeater.security.admin_password) _note:_ setting this will bypass the setup dialog, so don't use it until you have been thru setup unless you want to set everything radio/region manually
 * **GUEST** Set guest pw (repeater.security.guest_password)
 * **READONLY** Set to true to read only access (security.allow_read_only)
 * **UNSCOPED** Set to true to enable unscoped forwarding (mesh.unscoped_flood_allow)
 * **PATHHASH** Set to 0 or 1 change path hash # of bytes (mesh.path_hash_mode) default is 1 for 2 byte
 * **TXDELAY** Set to change TX delay factor (delays.tx_delay_factor) default is 1.25
-* **IATA** set for broker airport code reporting (mqtt_brokers,iata_code)
 * **EMAIL** Set for broker email (normally req'd for mqtt)  (mqtt_brokers.email)
 
 
@@ -94,9 +96,19 @@ Set these via the balenaCloud dashboard for your fleet or specific device to con
 **Notes:**
 * setting the admin password will prevent the setup dialog from running! You'll need to setup everything manually like radio, region, etc. 
 * Any which impact config.yaml are executed prior to startup of _pymc_repeater_
+* Most of the env variables control behavior that you can now set via the GUI. But if you manage multiple repeaters, it really helps to have the settings level based on your local policy. I've not found a way to do that for regions yet, but still looking!
 
 # Configuration:
 The application expects a `config.yaml` file. The container is designed to check for this file on boot; if missing, it will seed the directory with a template. 
+
+You can ssh or scp _out_ from the terminal window and use them to copy in existing files:
+_scp myuserid@xx.xx.xx.xx:mydir/config.yaml ._
+
+# Device I/O considerations:
+Things like DT Overlays and parameters are handled in the fleet or device configuration menu. 
+* **Nebrahats** Typically need DT overlay set to "spi0-0cs" and the DT parames set to **not** have spi=on set. (You may or may not need i2c_arm=on set)
+* **Zebra hats** Seemed to work with DT overlay set to "spi0-0cs" and the DT params set to "i2c_arm=on","spi=on"
+* **USB** USB devices should work, but I have not tested them. There may be some permission tweaks needed in the Balena dockerentry.sh to sort that. Let me know if you see issues or change needed.
 
 # Persistant Volumes:
 **read / write:**
