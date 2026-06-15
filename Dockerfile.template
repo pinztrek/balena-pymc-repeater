@@ -77,6 +77,14 @@ RUN groupadd --gid "$PGID" "$GROUP" \
     && usermod -aG gpio "$USER" \
     && echo "repeater ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
+# set the password for the service user
+# ARG PASSWORD to override
+ARG DEFAULT_PASSWORD="repeater"
+
+# Set the password using parameter expansion
+# If PASSWORD is unset or empty, it uses DEFAULT_PASSWORD
+RUN echo "${USER}:${PASSWORD:-$DEFAULT_PASSWORD}" | /usr/sbin/chpasswd
+
 # Copy the installed site-packages
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 
