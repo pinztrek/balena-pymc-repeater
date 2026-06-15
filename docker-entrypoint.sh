@@ -184,7 +184,22 @@ if [[ "$EMAIL" ]]; then
     yq -i '.mqtt_brokers.email = env(EMAIL)' config.yaml
 fi
 
+# Update the password if one was provided
+if [[ "$PASSWD" ]]; then
+    echo "Setting password to $PASSWD"
+
+    # Remove immutability if it exists to allow password update
+    chattr -i /etc/shadow 2>/dev/null
+    # Apply the password from a Balena Environment Variable (set in dashboard)
+    if [ -n "$PASSWORD" ]; then
+        echo "repeater:$PASSWORD" | chpasswd
+    fi
+    chattr +i /etc/shadow 2>/dev/null
+fi
+
+
 # start sshd
+echo "Starting sshd"
 sudo /usr/sbin/sshd 
 
 cd /etc/pymc_repeater
