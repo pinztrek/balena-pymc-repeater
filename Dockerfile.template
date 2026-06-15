@@ -65,7 +65,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup sshd
-RUN mkdir /var/run/sshd && \
+RUN mkdir -p /var/run/sshd && \
     sed -i 's/#PermitRootLogin yes/PermitRootLogin no/' /etc/ssh/sshd_config && \
     echo "AllowUsers repeater" >> /etc/ssh/sshd_config
 
