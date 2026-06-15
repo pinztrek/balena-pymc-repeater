@@ -9,19 +9,25 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Install build dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get update 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    git \
-    libffi-dev \
-    libusb-1.0-0-dev \
-    swig \
+
+RUN apt-get install -y --no-install-recommends \
+    git build-essential python3-dev libffi-dev libusb-1.0-0-dev swig \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Clone and install
-RUN git clone https://github.com/pyMC-dev/pyMC_Repeater.git . 
-RUN pip install --no-cache-dir  .
-RUN ls -l /app
+# 1. Clone the repository
+WORKDIR /app
+RUN git clone -b dev https://github.com/pyMC-dev/pyMC_Repeater.git . && \
+    git fetch --tags
+
+RUN pip install --no-cache-dir setuptools setuptools-scm && \
+    export SETUPTOOLS_SCM_PRETEND_VERSION=$(python3 -m setuptools_scm) && \
+    pip install --no-cache-dir .[hardware]
+
+RUN pwd; ls -al ; grep -i version pymc_repeater.egg-info/PKG-INFO
+#RUN ls -al /usr/local/bin
+#RUN ls -al /usr/local/lib
 
 # --- Stage 2: Runtime -----------------------------------------------
 #FROM python:3.12-bookworm-slim
@@ -92,7 +98,7 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 USER repeater
-WORKDIR /opt/pymc_repeater
+WORKDIR /etc/pymc_repeater
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 #CMD ["pymc-repeater", "--config", "/etc/pymc_repeater/config.yaml"]
