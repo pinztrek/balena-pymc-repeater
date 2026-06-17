@@ -62,6 +62,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     pciutils \
     usbutils \
     openssh-server \
+    curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup sshd
@@ -110,6 +112,10 @@ RUN BALENA_ARCH_CLEAN="%%BALENA_ARCH%%" \
     && if [ "${BALENA_ARCH_CLEAN}" = "aarch64" ]; then YQ_ARCH="arm64"; else YQ_ARCH="${BALENA_ARCH_CLEAN}"; fi \
     && wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${YQ_ARCH}" \
     && chmod +x /usr/local/bin/yq
+
+RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o \
+    /usr/local/bin/cloudflared \
+    && chmod +x /usr/local/bin/cloudflared
 
 # Setup environment config
 RUN echo "set -o vi" >> /etc/bash.bashrc && echo "alias ll='ls -l'" >> /etc/bash.bashrc
