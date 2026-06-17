@@ -209,8 +209,10 @@ fi
 
 
 # start sshd
-echo "Starting sshd"
-sudo /usr/sbin/sshd 
+if [[ "$SSH" ]]; then
+    echo "Starting sshd"
+    sudo /usr/sbin/sshd 
+fi
 
 cd /etc/pymc_repeater
 
