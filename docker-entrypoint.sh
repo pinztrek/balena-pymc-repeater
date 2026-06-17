@@ -198,6 +198,10 @@ if [[ "$PASSWD" ]]; then
 fi
 
 if [[ "$BROKER" ]]; then
+    if [ ! -f /etc/pymc_repeater/mqtt_broker.yaml ]; then
+        echo "Copy sample mqtt_broker.yaml file"
+        cp /opt/pymc_repeater/mqtt* /etc/pymc_repeater
+    fi
     echo "Setting up mqtt brokers"
     yq -i '.mqtt_brokers.brokers = [load("/etc/pymc_repeater/mqtt_broker.yaml")]' config.yaml
     
