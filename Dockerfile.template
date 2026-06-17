@@ -27,7 +27,7 @@ WORKDIR /app
 WORKDIR /app
 RUN git clone -b dev https://github.com/pyMC-dev/pyMC_Repeater.git . && \
     git fetch origin && \
-    git checkout $TARGET_HASH
+    git checkout $TARGET_HASH && \
     git fetch --tags 
 
 RUN pip install --no-cache-dir setuptools setuptools-scm && \
