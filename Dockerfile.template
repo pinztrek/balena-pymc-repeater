@@ -27,6 +27,9 @@ WORKDIR /app
 
 # 1. Clone the repository
 WORKDIR /app
+
+RUN echo "DEBUG: TARGET_HASH is currently set to ${TARGET_HASH}"
+
 RUN git clone -b dev https://github.com/pyMC-dev/pyMC_Repeater.git . && \
     git fetch --all && \
     git checkout $TARGET_HASH && \
