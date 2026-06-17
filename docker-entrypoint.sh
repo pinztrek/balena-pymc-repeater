@@ -214,6 +214,13 @@ if [[ "$SSH" ]]; then
     sudo /usr/sbin/sshd 
 fi
 
+if [[ "$CLOUDFLARE" ]]; then
+    echo "Starting cloudflared"
+    sudo /usr/local/bin/cloudflared tunnel run --token "$CLOUDFLARED" --loglevel warn
+fi
+
+
+
 cd /etc/pymc_repeater
 
 echo "docker-entrypoint.sh starting app"
