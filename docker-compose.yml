@@ -2,7 +2,11 @@ version: '2.1'
 
 services:
   pymc-repeater:
-    build: .
+    #build: .
+    build:
+      context: .
+      args:
+        - TARGET_HASH=${TARGET_HASH}
     privileged: true
     cap_add:
       - SYS_RAWIO
@@ -27,8 +31,6 @@ services:
       - "plugdev"
       - "gpio"
     restart: always
-    args:
-      - TARGET_HASH=${TARGET_HASH}
 
 volumes:
   config:
