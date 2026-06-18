@@ -29,4 +29,4 @@ data:
 version: 1.1.0
 
 build-variables:
-  TARGET_HASH: "23078de"
+  TARGET_HASH: "7968473"
