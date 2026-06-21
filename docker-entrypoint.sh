@@ -90,6 +90,7 @@ fi
 if [[ "$NODE_NAME" ]]; then
     echo "Set node_name to $NODE_NAME"
     yq -i '.repeater.node_name = env(NODE_NAME)' config.yaml
+    yq -i '.web.site_name |= if (. == null or . == "") then (env(NODE_NAME) | upcase) else . end' config.yaml
 fi
 
 if [[ "$LAT" ]]; then
@@ -110,7 +111,7 @@ if [ "$US" ]; then
     echo "Set radio to US defaults"
     yq -iP '
       .radio.bandwidth = 62500 |
-      .radio.coding_rate = 8 |
+      .radio.coding_rate = 5 |
       .radio.frequency = 910525000 |
       .radio.implicit_header = false |
       .radio.preamble_length = 17 |
@@ -127,12 +128,11 @@ if [ "$RADIO" ]; then
 
     # Assume sx1262 for now
     echo "Set radio to sx1262"
+    echo '---------------------debug------------'
     yq -iP '
       .radio_type = "sx1262"
     ' $CONFIG_FILE 
 
-    echo '---------------------debug------------'
-    grep pow $CONFIG_FILE
 
     if [ "$RADIO" = "nebra" ]; then
         RADIO="nebrahat"
@@ -144,32 +144,13 @@ if [ "$RADIO" ]; then
     # Have to do this in two steps due to yq funkiness
     echo Lookup $RADIO and update values into $CONFIG_FILE
 
-    #RADIO_JSON=$(jq -c ".hardware.$RADIO | del(.name)" "$SETTINGS_FILE")
-    RADIO_JSON=$(jq -c "{sx1262: .hardware.$RADIO} | del(.name)" "$SETTINGS_FILE")
+    RADIO_JSON=$(jq -c ".hardware.$RADIO | del(.name, .tx_power, .preamble_length)" "$SETTINGS_FILE")
     export RADIO_JSON
-    echo "Read: $RADIO_JSON"
-    echo "Converted to yaml"
-    echo $RADIO_JSON | yq -P
-    echo Now write to $CONFIG_FILE
-    yq -i '.sx1262 = (env(RADIO_JSON) | from_json)' "$CONFIG_FILE"
-    yq -iP $CONFIG_FILE
-
-
-
-
-    #RADIO_JSON=$(jq -c "{.hardware.$RADIO | del(.name)}" $SETTINGS_FILE) 
-    #export RADIO_JSON
-    #echo "Read: $RADIO_JSON"
-    #echo $RADIO_JSON | yq -P
-    #echo Now write to $CONFIG_FILE
-    ##yq -i '.sx1262 = env(RADIO_JSON) | .sx1262 style=""' $CONFIG_FILE \
-    #yq -i '.sx1262 = env(RADIO_JSON) | .sx1262 style=""' $CONFIG_FILE \
-    #&& yq -iP config.yaml
-    #    echo "Successfully updated $CONFIG_FILE with hardware profile '$RADIO'."
-    #else
-        #echo "Error: Radio profile '$RADIO' not found in $SETTINGS_FILE."
-        #exit 1
-    #fi
+    echo "Read JSON: $RADIO_JSON"
+    echo "As YAML:"
+    echo "$RADIO_JSON" | yq -pj -P '.'
+    echo "Writing to $CONFIG_FILE"
+    yq -iP '.sx1262 *= (strenv(RADIO_JSON) | from_json)' "$CONFIG_FILE"
 fi
 
 
@@ -200,7 +181,7 @@ fi
 
 if [[ "$ADMIN" ]]; then
     echo "Set ADMIN pw to $ADMIN"
-    yq -i '.repeater.security.guest_password = env(ADMIN)' config.yaml
+    yq -i '.repeater.security.admin_password = env(ADMIN)' config.yaml
 fi
 
 if [[ "$GUEST" ]]; then
