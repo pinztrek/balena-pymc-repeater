@@ -42,44 +42,44 @@ echo "delay set to $PYMC_DELAY"
 
 
 # Configuration Paths
-PYMC_LIB="/var/lib/pymc_repeater"
-PYMC_CFG="/etc/pymc_repeater"
-cfgdir="/etc/pymc_repeater"
-installdir="/opt/pymc_repeater"
-rundir="/opt/pymc_repeater"
+LIB_DIR="/var/lib/pymc_repeater"
+CONFIG_DIR="/etc/pymc_repeater"
+OPT_DIR="/opt/pymc_repeater"
+SETTINGS_FILE="$LIB_DIR/radio-settings.json"
+CONFIG_FILE="$CONFIG_DIR/config.yaml"
 
-sudo chown -R repeater:repeater $cfgdir
+sudo chown -R repeater:repeater $CONFIG_DIR
 
 
 if [[ "$PYMC_CLEAN" ]]; then
-        echo "Nuke $rundir files"
-        rm -rf $rundir/repeat* $rundir/.config
+        echo "Nuke $LIB_DIR files"
+        rm -rf $LIB_DIR/repeat* $LIB_DIR/.config
         PYMC_RESET=1
 fi
 
 if [[ "$PYMC_RESET" ]]; then
         echo "Save Old Config in config.last"
-        cp "$cfgdir"/config.yaml "$cfgdir"/config.last
+        cp "$CONFIG_FILE" "$CONFIG_DIR/config.last"
         echo "Install default config.yaml"
-        cp "$installdir"/config.yaml.example "$cfgdir"/config.yaml
+        cp "$OPT_DIR/config.yaml.example" "$CONFIG_FILE"
 fi
 
 
 # Seed the radio settings if missing
-if [ ! -f /var/lib/pymc_repeater/radio-settings.json ]; then
+if [ ! -f "$SETTINGS_FILE" ]; then
     echo "Install radio files..."
-    sudo cp /opt/pymc_repeater/radio* /var/lib/pymc_repeater
-    sudo chown repeater:repeater /var/lib/pymc_repeater/radio*
+    sudo cp $OPT_DIR/radio* $LIB_DIR
+    sudo chown repeater:repeater $LIB_DIR/radio*
 fi
 # Seed the configuration if missing
-if [ ! -f /etc/pymc_repeater/config.yaml ]; then
+if [ ! -f "$CONFIG_FILE" ]; then
     echo "Initializing default configuration..."
-    sudo cp /opt/pymc_repeater/config.yaml.example /etc/pymc_repeater/config.yaml
-    sudo chown repeater:repeater /etc/pymc_repeater/config.yaml
+    sudo cp $OPT_DIR/config.yaml.example $CONFIG_FILE
+    sudo chown repeater:repeater $CONFIG_FILE
 fi
 
 # make changes to config.yaml as needed
-cd /etc/pymc_repeater
+cd $CONFIG_DIR
 
 if [[ "$OWNER" ]]; then
     echo "Set owner_info to $OWNER"
@@ -102,10 +102,6 @@ if [[ "$LON" ]]; then
     echo "Set LON to $LON"
     yq -i '.repeater.longitude = env(LON)' config.yaml
 fi
-
-# Define full file paths
-SETTINGS_FILE="$PYMC_LIB/radio-settings.json"
-CONFIG_FILE="$PYMC_CFG/config.yaml"
 
 if [ "$US" ]; then
     echo "Set radio to US defaults"
@@ -253,13 +249,12 @@ if [[ "$PASSWD" ]]; then
 fi
 
 if [[ "$BROKER" ]]; then
-    if [ ! -f /etc/pymc_repeater/mqtt_broker.yaml ]; then
+    if [ ! -f "$CONFIG_DIR/mqtt_broker.yaml" ]; then
         echo "Copy sample mqtt_broker.yaml file"
-        cp /opt/pymc_repeater/mqtt* /etc/pymc_repeater
+        cp $OPT_DIR/mqtt* $CONFIG_DIR
     fi
     echo "Setting up mqtt brokers"
-    yq -i '.mqtt_brokers.brokers = [load("/etc/pymc_repeater/mqtt_broker.yaml")]' config.yaml
-    
+    yq -i '.mqtt_brokers.brokers = [load("mqtt_broker.yaml")]' config.yaml
 fi
 
 
@@ -278,8 +273,6 @@ if [[ "$CLOUDFLARE" ]]; then
 fi
 
 
-
-cd /etc/pymc_repeater
 
 echo "docker-entrypoint.sh starting app"
 # Now run the application
