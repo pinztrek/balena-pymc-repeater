@@ -1,0 +1,62 @@
+policy_engine:
+  enabled: true
+  default_action: allow
+  rules:
+  - id: 1
+    name: Wardriving
+    enabled: true
+    if:
+      all:
+      - field: channel_hash
+        op: equals
+        value: '0x81'
+      - field: hop_count
+        op: greater_than
+        value: 5
+    then:
+      action: drop
+  - id: 2
+    name: test
+    enabled: true
+    if:
+      all:
+      - field: channel_hash
+        op: equals
+        value: '0xD9'
+      - field: hop_count
+        op: greater_than
+        value: 9
+    then:
+      action: drop
+  - id: 3
+    name: '#bot'
+    enabled: true
+    if:
+      all:
+      - field: channel_hash
+        op: equals
+        value: '0xCA'
+      - field: hop_count
+        op: greater_than
+        value: 9
+    then:
+      action: drop
+  - id: 4
+    name: '#wx'
+    enabled: true
+    if:
+      all:
+      - field: channel_hash
+        op: equals
+        value: '0x90'
+      - field: hop_count
+        op: greater_than
+        value: 9
+    then:
+      action: drop
+  objects:
+    channel_hash_groups: {}
+    pubkey_groups: {}
+groups:
+  channel_hashes: []
+  pubkeys: []

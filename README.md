@@ -1,15 +1,15 @@
 
-# <kbd><img src="assets/images/balena-icon.png" alt="balena.io logo" width="60" style="border-radius:45%"/></kbd> <kbd><img src="assets/images/pymc.png" alt="pymc_repeater logo" width="60" style="border-radius:45%" /></kbd> balena-pymc-repeater
+# <kbd><img src="assets/images/balena-icon.png" alt="balena.io logo" width="60" style="border-radius:45%"/></kbd> <kbd><img src="assets/images/openhop.png" alt="openhop_repeater logo" width="60" style="border-radius:45%" /></kbd> balena-openhop-repeater
 
-This project provides a containerized environment for running and managing `pymc_repeater` on balena-enabled hardware.
+This project provides a containerized environment for running and managing `openhop_repeater` on balena-enabled hardware.
 
-## The goal for this project is to be able to stand up a `pymc_repeater` container and completely manage it via balenaCloud with minimal hand-editing of config files and no container-level code changes.
+## The goal for this project is to be able to stand up a `openhop_repeater` container and completely manage it via balenaCloud with minimal hand-editing of config files and no container-level code changes.
 
 Specifically, no arcane docker/linux knowledge is required (though some linux awareness sometimes helps for advanced changes). But it's close to turnkey. 
 
 ## Key Features:
-* **Simplified Management:** Utilizes environment variables to configure behavior and application settings for the corner cases where you don't want to use the pymc web gui. 
-* **Automatic Deployments:** Release and dev branches, will automatically update unless you pin to a specific release
+* **Simplified Management:** Utilizes environment variables to configure behavior and application settings for the corner cases where you don't want to use the openhop web gui. 
+* **Automatic Deployments:** Release and dev branches, will automatically update devices when pushed unless you pin to a specific release
 * **Persistent Configuration:** Configuration file structures are persistent and read/write, ensuring settings survive updates.
 * **Template-Based Setup:** If an existing `config.yaml` is not found, one is automatically created from `config.yaml.example`.
 * **Maintenance & Debug Mode:** Includes support for debugging and terminal access to the container for manual adjustments when needed.
@@ -17,21 +17,26 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 * **Can be manually edited via Balena terminal** Nano, vi, etc are available to edit config files in the balena terminal
 
 ## Current Status:
-* **v0.5 Beta** PYMC Operational, key variables supported in addition to web/manual config
+* **v1.0 Beta** OpenHop Operational, key variables supported in addition to web/manual config
 
 ### 🚧 UNDER CONSTRUCTION 🚧
 * **dev branch** adding more obscure variable supoort in addition to web/manual config
+* Adjustments to the name change from PYMC_Repeater to OpenHop_repeater in testing
+
+### Known Issues:
+* USB devices have not been tested yet and may have permission issues
+* Radio metrics submenu is not working right, as it needs the rrd command which I'm having difficulty getting included due to python version issues.
 
 # Usage:
 
 ## 1. Create a free tier account at [balena-cloud.com](https://dashboard.balena-cloud.com/login)
 
 ## 2. Deploy by clicking the URL/Button below:
-[![balena deploy button](assets/images/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/pinztrek/balena-pymc-repeater)
+[![balena deploy button](assets/images/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/pinztrek/balena-openhop-repeater)
 ### OR for bleeding edge dev balena branch (unstable):
-[![balena deploy button](assets/images/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/pinztrek/balena-pymc-repeater-dev)
+[![balena deploy button](assets/images/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/pinztrek/balena-openhop-repeater-dev)
 
-## 3. Once logged into balena, it will create a fleet for *balena-pymc-repeater*
+## 3. Once logged into balena, it will create a fleet for *balena-openhop-repeater*
 ## 4. Create your device and download the disk image
 * Select your device type (e.g., Raspberry Pi 3, 4 or similar).
 * Download the image and flash it to a microSD or eMMC using Balena Etcher or similar tools.
@@ -44,61 +49,20 @@ _Note:_ The first time it boots it has to download the full OS, so it can take a
 * Once running, you can access the container terminal via the balenaCloud dashboard to run commands or inspect logs.
 * You'll want to note the local IP address on the dashboard if you do not know it already
 
-## 6. Access the PYMC_repeater web control plane GUI
+## 6. Access the OpenHop web control plane GUI
 * Using your browser navigate to: **http://your_IP_addr:8000**
-* The PYMC web gui should load and start the setup dialog. Work through this, selecting radio, region, etc. Note the current build dropped the Nebrahat, which I will readd. 
-* When it's complete, PYMC will restart the container. There is a sleep delay when PYMC exits which will need to expire, or you can hit the recycle button on the balena dashboard to restart the container. 
+* The OpenHop web gui should load and start the setup dialog. Work through this, selecting radio, region, etc. Note the current build dropped the Nebrahat, which I will readd. 
+* When it's complete, OpenHop will restart the container. There is a sleep delay when OpenHop exits which will need to expire, or you can hit the recycle button on the balena dashboard to restart the container. 
 * It'll come up running the gui, and you should start seeing packets if all is set correctly
-* If you need to adjust the config, use the terminal, select the pymc container, and it will give you a shell prompt. All editable files should be accessible as the _repeater_ user, but sudo is available if needed. 
+* If you need to adjust the config, use the terminal, select the openhop container, and it will give you a shell prompt. All editable files should be accessible as the _repeater_ user, but sudo is available if needed. 
 
 # Controlling Behavior with Env Variables:
-### (Under Construction)
-Balena environment variables can manage most config items, eleminating the need for editing config.yaml. 
 
-Set these via the balenaCloud dashboard for your fleet or specific device to configure or manage:
+Balena environment variables can manage most configuration items, eliminating the need for manual gui config or editing config.yaml.
 
-***Working***
-* **PYMC_RESET:** Set to `1` to restore to a default config.yaml, will trigger setup menu. Does not overwrite databases
-* **PYMC_CLEAN:** Set to `1` to restore wipe all config / data and start fresh
-* **PYMC_DEBUG:** Set to `1` to enable a 180-second sleep (useful for terminal access/debugging).
-* **PYMC_DELAY:** Set to desired sleep period (useful for terminal access/debugging). Overrides defaul 5 second sleep when _pymc_repeater_ exits.
-* **OWNER:** Set to desired owner_info string, stores in config.yaml
-* **NODE_NAME:** Set to desired node_name string, stores in config.yaml
-* **LAT:** Set to desired lattitude string, stores in config.yaml
-* **LON:** Set to desired longitude string, stores in config.yaml
-* **IATA** set for broker airport code reporting (mqtt_brokers,iata_code)
+The big win with this approach is if you are operating several repeaters you can level configurations across your fleet. Likewise, you can standup a new repeater and not have to do any manual configuration just by setting it's name, radio type, lat/lon, etc. via env variables. 
 
-_Working Advanced_ ( Typically only used for managing fleets of nodes remotely)
-* **KEY_HEX** Set identity key as hex string (repeater.identity_key) — auto-converted to base64 (uses same format as the convert script)
-* **KEY_BASE64** Set identity key directly as base64 string (repeater.identity_key)
-* **MAXFLOODHOPS** Set to desired hop limit, (repeater.max_flood_hops)
-* **ADVERT** Set to # hours for advert interval (repeater.send_advert_interval_hours)
-* **ADAPTIVE** Set to true to enable adaptive advert limit, (repeater.advert_adaptive.enabled.)
-* **LIMIT** Set to true to enable advert limiting, (repeater.advert_rate_limit.enabled)
-* **PENALTY** Set to true to enable advert penalty box, (repeater.advert_penalty_box.enable)
-* **MAXCLIENTS** Set to increase or limit the number of web clients
-* **ADMIN** Set admin pw (repeater.security.admin_password) _note:_ setting this will bypass the setup dialog, so don't use it until you have been thru setup unless you want to set everything radio/region manually
-* **GUEST** Set guest pw (repeater.security.guest_password)
-* **READONLY** Set to true to read only access (security.allow_read_only)
-* **UNSCOPED** Set to true to enable unscoped forwarding (mesh.unscoped_flood_allow)
-* **PATHHASH** Set to 0 or 1 change path hash # of bytes (mesh.path_hash_mode) default is 1 for 2 byte
-* **TXDELAY** Set to change TX delay factor (delays.tx_delay_factor) default is 1.25
-* **EMAIL** Set for broker email (normally req'd for mqtt)  (mqtt_brokers.email)
-* **BROKER** Set to `1` to enable MQTT broker integration — merges `mqtt_broker.yaml` from `/etc/pymc_repeater/` into config.yaml (seeds from default if not present)
-* **US** Set to `1` to apply US/Canada radio region defaults to config.yaml (910.525MHz / SF7 / BW62.5)
-* **RADIO** Set to hardware profile name from `radio-settings.json` to configure SX1262 GPIO pin assignments (e.g. `RADIO=zebra`, `RADIO=nebrahat`). Merges profile into the `sx1262` config section.
-
-
-***Planned***
-* **REGION:** Set to desired region scope (may be a string)
-
-***TBD***
-* **RADIOREGION:** Set to desired region radio preset, stores in config.yaml
-
-**Notes:**
-* setting the admin password will prevent the setup dialog from running! You'll need to setup everything manually like radio, region, etc. 
-* Any which impact config.yaml are executed prior to startup of _pymc_repeater_
-* Most of the env variables control behavior that you can now set via the GUI. But if you manage multiple repeaters, it really helps to have the settings level based on your local policy. I've not found a way to do that for regions yet, but still looking!
+See [docs/variables.md](docs/variables.md) for the full listi of variables and how to use.
 
 # Configuration:
 The application expects a `config.yaml` file. The container is designed to check for this file on boot; if missing, it will seed the directory with a template. 
@@ -114,24 +78,44 @@ Things like DT Overlays and parameters are handled in the fleet or device config
 
 # Persistant Volumes:
 **read / write:**
-* **/etc/pymc_repeater** mainly contains config,yaml, but can hold backup configs, etc
-* **/var/lib/pymc_repeater** main runtime data dir for databases, also home dir for the **repeater** user. By default the identity key is stored in a hidden folder here unless overridden in _config.yaml_
+* **/etc/openhop_repeater** mainly contains config,yaml, but can hold backup configs, etc
+* **/var/lib/openhop_repeater** main runtime data dir for databases, also home dir for the **repeater** user. By default the identity key is stored in a hidden folder here unless overridden in _config.yaml_
 
 **read only:**
-* **/opt/lib/pymc_repeater** has normal default files from build
+* **/opt/lib/openhop_repeater** has normal default files from build
 * **/usr/local/bin** has support scripts, including the normal script to import a private key of your chosing. 
 * **/usr/local** normal python pip install locations for libs and executables (lib and bin respectively)
 
 
 # Balena Terminal: 
-<img src="assets/images/balena-terminal-pymc.png" alt="balena terminal" width="650"/> Use the balena terminal to hand edit or manipulate the running environment.
+<img src="assets/images/balena-terminal-openhop.png" alt="balena terminal" width="650"/> Use the balena terminal to hand edit or manipulate the running environment.
 
 # Release versions
-Any updates for *balena-pymc-repeater* will be automatically deployed to your devices. If an update creates issues, you can pin to a prior release using the balena releases page.
+
+The "Deploy to Balena" link creates a fleet with the latest release automatically. 
+
+Any updates for *balena-openhop-repeater* will be automatically deployed to your devices when a push is initiated for your fleet. This is typically done by doing a git push  to a special origin remote to balena. 
+
+Note that when you push *balena-openhop-repeater* it will pull the latest *OpenHop-repeater* code and include it. You can manually override to a specific release of *OpenHop-repeater* if needed. 
+
+There are other methods to push updates, see the next topic. 
+
+If an update creates issues, you can pin to a prior release using the balena releases page.
+
+# Updating Your OpenHop Install
+
+Getting an OpenHop instance running with minimal interaction / Linux / git knowledge is the main focus. 
+
+But, once running, you will periodically want to refresh your fleet with the latest code from the [openhop-dev/openhop_repeater](https://github.com/openhop-dev/openhop_repeater) repo.
+
+There are multiple ways to do this, see [docs/update.md](docs/update.md) for update procedures.
+
+# AI acknowledgement:
+This project is hand written. I do occasionally use claude-code to help make tedious revisions or help tourbleshoot obscure issues. But it is **NOT** vibe coded. And all edits are reviewed before execution. 
 
 # Credit:
-*  [LLoyd pymc-dev](https://github.com/pymc-dev) The excellent pymc_repeater project itself is why we are here. [https://github.com/pymc-dev/pyMC_Repeater](https://github.com/pymc-dev/pyMC_Repeater)
-*  [Michael Gillet's](https://github.com/migillett) (migillett) docker contribution to the pymc_repeater code [https://github.com/migillett/pyMC_Repeater](https://github.com/migillett/pyMC_Repeater) informed inital prototype of this balena based project. There are still tidbits leveraged in the build. 
+*  [LLoyd openhop-dev](https://github.com/openhop-dev) The excellent openhop_repeater project itself is why we are here. [https://github.com/openhop-dev/openhop_repeater](https://github.com/openhop-dev/openhop_repeater)
+*  [Michael Gillet's](https://github.com/migillett) (migillett) docker contribution to the openhop_repeater code [https://github.com/migillett/openhop_repeater](https://github.com/migillett/openhop_repeater) informed inital prototype of this balena based project. There are still tidbits leveraged in the build. 
 
 ---
-*Maintained by [pinztrek](https://github.com/pinztrek/balena-pymc-repeater)*
+*Maintained by [pinztrek](https://github.com/pinztrek/balena-openhop-repeater)*

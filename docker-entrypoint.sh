@@ -31,55 +31,55 @@ fi
 
 ls -al /dev/gpi*
 
-if [[ "$PYMC_DEBUG" ]] && [[ ! "$PYMC_DELAY" ]]; then
-        PYMC_DELAY=180
+if [[ "$OPENHOP_DEBUG" ]] && [[ ! "$OPENHOP_DELAY" ]]; then
+        OPENHOP_DELAY=180
 fi
 
-if [[ ! "$PYMC_DELAY" ]]; then
-        PYMC_DELAY=5
+if [[ ! "$OPENHOP_DELAY" ]]; then
+        OPENHOP_DELAY=5
 fi
-echo "delay set to $PYMC_DELAY"
+echo "delay set to $OPENHOP_DELAY"
 
 
 # Configuration Paths
-PYMC_LIB="/var/lib/pymc_repeater"
-PYMC_CFG="/etc/pymc_repeater"
-cfgdir="/etc/pymc_repeater"
-installdir="/opt/pymc_repeater"
-rundir="/opt/pymc_repeater"
+LIB_DIR="/var/lib/openhop_repeater"
+CONFIG_DIR="/etc/openhop_repeater"
+OPT_DIR="/opt/openhop_repeater"
+SETTINGS_FILE="$LIB_DIR/radio-settings.json"
+CONFIG_FILE="$CONFIG_DIR/config.yaml"
 
-sudo chown -R repeater:repeater $cfgdir
+sudo chown -R repeater:repeater $CONFIG_DIR
 
 
-if [[ "$PYMC_CLEAN" ]]; then
-        echo "Nuke $rundir files"
-        rm -rf $rundir/repeat* $rundir/.config
-        PYMC_RESET=1
+if [[ "$OPENHOP_CLEAN" ]]; then
+        echo "Nuke $LIB_DIR files"
+        rm -rf $LIB_DIR/repeat* $LIB_DIR/.config
+        OPENHOP_RESET=1
 fi
 
-if [[ "$PYMC_RESET" ]]; then
+if [[ "$OPENHOP_RESET" ]]; then
         echo "Save Old Config in config.last"
-        cp "$cfgdir"/config.yaml "$cfgdir"/config.last
+        cp "$CONFIG_FILE" "$CONFIG_DIR/config.last"
         echo "Install default config.yaml"
-        cp "$installdir"/config.yaml.example "$cfgdir"/config.yaml
+        cp "$OPT_DIR/config.yaml.example" "$CONFIG_FILE"
 fi
 
 
 # Seed the radio settings if missing
-if [ ! -f /var/lib/pymc_repeater/radio-settings.json ]; then
+if [ ! -f "$SETTINGS_FILE" ]; then
     echo "Install radio files..."
-    sudo cp /opt/pymc_repeater/radio* /var/lib/pymc_repeater
-    sudo chown repeater:repeater /var/lib/pymc_repeater/radio*
+    sudo cp $OPT_DIR/radio* $LIB_DIR
+    sudo chown repeater:repeater $LIB_DIR/radio*
 fi
 # Seed the configuration if missing
-if [ ! -f /etc/pymc_repeater/config.yaml ]; then
+if [ ! -f "$CONFIG_FILE" ]; then
     echo "Initializing default configuration..."
-    sudo cp /opt/pymc_repeater/config.yaml.example /etc/pymc_repeater/config.yaml
-    sudo chown repeater:repeater /etc/pymc_repeater/config.yaml
+    sudo cp $OPT_DIR/config.yaml.example $CONFIG_FILE
+    sudo chown repeater:repeater $CONFIG_FILE
 fi
 
 # make changes to config.yaml as needed
-cd /etc/pymc_repeater
+cd $CONFIG_DIR
 
 if [[ "$OWNER" ]]; then
     echo "Set owner_info to $OWNER"
@@ -89,8 +89,16 @@ fi
 
 if [[ "$NODE_NAME" ]]; then
     echo "Set node_name to $NODE_NAME"
-    yq -i '.repeater.node_name = env(NODE_NAME)' config.yaml
-    yq -i '.web.site_name |= if (. == null or . == "") then (env(NODE_NAME) | upcase) else . end' config.yaml
+    CURRENT_NAME=$(yq '.repeater.node_name // ""' config.yaml)
+    if [[ "$CURRENT_NAME" != "$NODE_NAME" ]]; then
+        yq -i '.repeater.node_name = env(NODE_NAME)' config.yaml
+    fi
+    CURRENT_SITE=$(yq '.web.site_name // ""' config.yaml)
+    if [[ -z "$CURRENT_SITE" || "$CURRENT_SITE" == "null" ]]; then
+        SITE_NAME="${NODE_NAME^^}"
+        export SITE_NAME
+        yq -i '.web.site_name = env(SITE_NAME)' config.yaml
+    fi
 fi
 
 if [[ "$LAT" ]]; then
@@ -102,10 +110,6 @@ if [[ "$LON" ]]; then
     echo "Set LON to $LON"
     yq -i '.repeater.longitude = env(LON)' config.yaml
 fi
-
-# Define full file paths
-SETTINGS_FILE="$PYMC_LIB/radio-settings.json"
-CONFIG_FILE="$PYMC_CFG/config.yaml"
 
 if [ "$US" ]; then
     echo "Set radio to US defaults"
@@ -151,6 +155,22 @@ if [ "$RADIO" ]; then
     echo "$RADIO_JSON" | yq -pj -P '.'
     echo "Writing to $CONFIG_FILE"
     yq -iP '.sx1262 *= (strenv(RADIO_JSON) | from_json)' "$CONFIG_FILE"
+fi
+
+# Turn power down on nebrahat
+if [ "$RADIO" = "nebrahat" ]; then
+    echo "Lower radio power for nebrahats"
+    yq -iP "
+      .radio.tx_power = 8
+    " $CONFIG_FILE
+fi
+
+# allow power override though
+if [ "$PWR" ]; then
+    echo "Set radio power to to $PWR"
+    yq -iP "
+      .radio.tx_power = $PWR
+    " $CONFIG_FILE
 fi
 
 
@@ -253,13 +273,12 @@ if [[ "$PASSWD" ]]; then
 fi
 
 if [[ "$BROKER" ]]; then
-    if [ ! -f /etc/pymc_repeater/mqtt_broker.yaml ]; then
+    if [ ! -f "$CONFIG_DIR/mqtt_broker.yaml" ]; then
         echo "Copy sample mqtt_broker.yaml file"
-        cp /opt/pymc_repeater/mqtt* /etc/pymc_repeater
+        cp $OPT_DIR/mqtt* $CONFIG_DIR
     fi
     echo "Setting up mqtt brokers"
-    yq -i '.mqtt_brokers.brokers = [load("/etc/pymc_repeater/mqtt_broker.yaml")]' config.yaml
-    
+    yq -i '.mqtt_brokers.brokers = [load("mqtt_broker.yaml")]' config.yaml
 fi
 
 
@@ -279,10 +298,10 @@ fi
 
 
 
-cd /etc/pymc_repeater
+grep -q 'pymc_repeater' "$CONFIG_FILE" && sed -i 's|pymc_repeater|openhop_repeater|g' "$CONFIG_FILE"
 
 echo "docker-entrypoint.sh starting app"
 # Now run the application
 #exec "$@"
-pymc-repeater ; echo "PYMC exited, sleeping $PYMC_DELAY seconds"; sleep $PYMC_DELAY
+openhop-repeater ; echo "OPENHOP exited, sleeping $OPENHOP_DELAY seconds"; sleep $OPENHOP_DELAY
 echo "docker-entrypoint.sh exit"

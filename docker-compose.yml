@@ -1,7 +1,7 @@
 version: '2.1'
 
 services:
-  pymc-repeater:
+  openhop-repeater:
     build: 
       context: .
       args:
@@ -25,8 +25,8 @@ services:
       # Balena uses this label to enable GPIO access
       io.balena.features.gpio: '1'
     volumes:
-      - config:/etc/pymc_repeater
-      - data:/var/lib/pymc_repeater
+      - config:/etc/openhop_repeater
+      - data:/var/lib/openhop_repeater
     group_add:
       - "plugdev"
       - "gpio"

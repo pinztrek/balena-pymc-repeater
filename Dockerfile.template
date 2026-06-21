@@ -24,7 +24,7 @@ WORKDIR /app
 WORKDIR /app
 
 
-RUN git clone -b dev https://github.com/pyMC-dev/pyMC_Repeater.git . && \
+RUN git clone -b dev https://github.com/openhop-dev/openhop_repeater.git . && \
     git fetch --all && \
     git checkout $TARGET_HASH && \
     git fetch --tags 
@@ -33,7 +33,7 @@ RUN pip install --no-cache-dir setuptools setuptools-scm && \
     export SETUPTOOLS_SCM_PRETEND_VERSION=$(python3 -m setuptools_scm) && \
     pip install --no-cache-dir .[hardware]
 
-RUN pwd; ls -al ; grep -i version pymc_repeater.egg-info/PKG-INFO
+RUN pwd; ls -al ; grep -i version openhop_repeater.egg-info/PKG-INFO
 #RUN ls -al /usr/local/bin
 #RUN ls -al /usr/local/lib
 
@@ -72,6 +72,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     openssh-server \
     curl \
     ca-certificates \
+    ntpsec \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup sshd
@@ -83,7 +84,7 @@ RUN mkdir -p /var/run/sshd && \
 # Create system user, group, and permissions
 RUN groupadd --gid "$PGID" "$GROUP" \
     && groupadd -f gpio \
-    && useradd --uid "$PUID" --gid "$PGID" --home-dir /var/lib/pymc_repeater --create-home --shell /usr/bin/bash "$USER" \
+    && useradd --uid "$PUID" --gid "$PGID" --home-dir /var/lib/openhop_repeater --create-home --shell /usr/bin/bash "$USER" \
     && usermod -aG gpio "$USER" \
     && echo "repeater ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
@@ -103,17 +104,17 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /app/convert* /usr/local/bin/
 
 # Copy config files
-COPY --from=builder /app/radio* /opt/pymc_repeater/
-COPY --from=builder /app/config.yaml.example /opt/pymc_repeater
-RUN sed -i 's/\(tx_delay_factor:\) 1.0/\1 1.25/' /opt/pymc_repeater/config.yaml.example
-RUN sed -i 's/\(path_hash_mode:\) 0/\1 1/' /opt/pymc_repeater/config.yaml.example
-RUN sed -i 's/\(max_clients:\) 1/\1 3/' /opt/pymc_repeater/config.yaml.example
+COPY --from=builder /app/radio* /opt/openhop_repeater/
+COPY --from=builder /app/config.yaml.example /opt/openhop_repeater
+RUN sed -i 's/\(tx_delay_factor:\) 1.0/\1 1.25/' /opt/openhop_repeater/config.yaml.example
+RUN sed -i 's/\(path_hash_mode:\) 0/\1 1/' /opt/openhop_repeater/config.yaml.example
+RUN sed -i 's/\(max_clients:\) 1/\1 3/' /opt/openhop_repeater/config.yaml.example
 
 # Create directories and set ownership
-RUN mkdir -p /opt/pymc_repeater /etc/pymc_repeater /var/lib/pymc_repeater \
-    && chown -R repeater:repeater /opt/pymc_repeater /etc/pymc_repeater /var/lib/pymc_repeater 
+RUN mkdir -p /opt/openhop_repeater /etc/openhop_repeater /var/lib/openhop_repeater \
+    && chown -R repeater:repeater /opt/openhop_repeater /etc/openhop_repeater /var/lib/openhop_repeater 
 
-RUN ls -al /etc/pymc_repeater
+RUN ls -al /etc/openhop_repeater
 
 # Install yq 
 RUN BALENA_ARCH_CLEAN="%%BALENA_ARCH%%" \
@@ -133,12 +134,11 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Copy default broker yaml
-COPY mqtt_broker.yaml /opt/pymc_repeater/mqtt_broker.yaml
-RUN chown $USER /opt/pymc_repeater/mqtt_broker.yaml
-RUN chmod a+rw /opt/pymc_repeater/mqtt_broker.yaml
+COPY mqtt_broker.yaml /opt/openhop_repeater/mqtt_broker.yaml
+RUN chown $USER /opt/openhop_repeater/mqtt_broker.yaml
+RUN chmod a+rw /opt/openhop_repeater/mqtt_broker.yaml
 
 USER repeater
-WORKDIR /etc/pymc_repeater
+WORKDIR /etc/openhop_repeater
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-#CMD ["pymc-repeater", "--config", "/etc/pymc_repeater/config.yaml"]
