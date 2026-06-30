@@ -17,15 +17,13 @@ Specifically, no arcane docker/linux knowledge is required (though some linux aw
 * **Can be manually edited via Balena terminal** Nano, vi, etc are available to edit config files in the balena terminal
 
 ## Current Status:
-* **v1.0 Beta** OpenHop Operational, key variables supported in addition to web/manual config
+* **v1.1.1-beta** OpenHop fully operational, extending remote mgt options
 
 ### 🚧 UNDER CONSTRUCTION 🚧
-* **dev branch** adding more obscure variable supoort in addition to web/manual config
-* Adjustments to the name change from PYMC_Repeater to OpenHop_repeater in testing
+* **dev branch** adding more obscure variable support in addition to web/manual config
 
 ### Known Issues:
 * USB devices have not been tested yet and may have permission issues
-* Radio metrics submenu is not working right, as it needs the rrd command which I'm having difficulty getting included due to python version issues.
 
 # Usage:
 
