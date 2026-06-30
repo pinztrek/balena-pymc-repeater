@@ -73,6 +73,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     ntpsec \
+    rrdtool \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup sshd
