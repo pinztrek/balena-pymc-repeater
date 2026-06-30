@@ -282,6 +282,10 @@ if [[ "$BROKER" ]]; then
 fi
 
 
+# start ntp, defaults are fine
+echo "Starting ntpd"
+sudo /usr/sbin/ntpd 
+
 # start sshd
 if [[ "$SSH" ]]; then
     echo "Starting sshd"
