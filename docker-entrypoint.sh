@@ -352,7 +352,7 @@ echo "docker-entrypoint.sh starting app"
 if [[ "$SYSLOG" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*(:[0-9]+)?$ ]]; then
     LOG_TAG="${NODE_NAME}"
     echo "Logging to syslog as $LOG_TAG"
-    openhop-repeater 2>&1 | logger -t "$LOG_TAG"
+    openhop-repeater 2>&1 | tee >(logger -t "$LOG_TAG")
 else
     openhop-repeater
 fi
