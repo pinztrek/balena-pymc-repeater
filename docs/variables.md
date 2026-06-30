@@ -40,7 +40,7 @@ Set these via the balenaCloud dashboard for your fleet or specific device to con
 * **PWR** Set to desired power in dbm to override radio/region defaults
 
 ***Logging***
-* **SYSLOG** Set to `ip:port` (e.g. `192.168.1.100:514`) to enable remote syslog forwarding. Validates as a plausible IP:port before activating. When set: starts rsyslogd, seeds `/etc/openhop_repeater/rsyslog.conf` with the target pre-configured (UDP, never overwrites existing), and pipes all openhop output through `logger` tagged with `NODE_NAME`. The source IP is identified by the receiving syslog server.
+* **SYSLOG** Set to an IP or hostname, with optional port (e.g. `192.168.1.100`, `192.168.1.100:514`, `syslog.example.com`). Port defaults to 514 if omitted. When set: starts rsyslogd, seeds `/etc/openhop_repeater/rsyslog.conf` on first run, and updates the active forwarding target on every restart via sed (other conf edits are preserved). Pipes all openhop output through `logger` tagged with `NODE_NAME`.
 
 ***Planned***
 * **RADIO_REGION** Select and configure the radio region presets by specifying the entry in the presets.

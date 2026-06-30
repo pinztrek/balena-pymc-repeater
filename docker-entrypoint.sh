@@ -300,29 +300,38 @@ if [[ "$SSH" ]]; then
     sudo /usr/sbin/sshd
 fi
 
-if [[ "$SYSLOG" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+if [[ "$SYSLOG" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*(:[0-9]+)?$ ]]; then
+    # Default to port 514 if not specified
+    if [[ "$SYSLOG" == *:* ]]; then
+        SYSLOG_TARGET="$SYSLOG"
+    else
+        SYSLOG_TARGET="${SYSLOG}:514"
+    fi
     SYSLOG_CONF="$CONFIG_DIR/rsyslog.conf"
     if [ ! -f "$SYSLOG_CONF" ]; then
-        echo "Creating rsyslog.conf targeting $SYSLOG..."
+        echo "Creating rsyslog.conf targeting $SYSLOG_TARGET..."
         cat > "$SYSLOG_CONF" << EOF
 # rsyslog.conf - openhop_repeater
-# Restart the container after editing this file.
+# Edit as needed; SYSLOG env var updates the active forwarding target on restart.
 
 # Creates /dev/log for local syslog() calls
 module(load="imuxsock")
 
 # Forward all messages to remote syslog server (UDP):
-*.* @${SYSLOG}
+*.* @${SYSLOG_TARGET}
 
 # Alternate TCP (more reliable, change @ to @@):
-# *.* @@${SYSLOG}
+# *.* @@${SYSLOG_TARGET}
 
 # Log to a local file instead:
 # *.* /var/log/syslog
 EOF
+    else
+        echo "Updating rsyslog.conf target to $SYSLOG_TARGET..."
+        sed -i "s|^\*\.\* @[^@].*|*.* @${SYSLOG_TARGET}|" "$SYSLOG_CONF"
     fi
     echo "Starting rsyslogd"
-    sudo rsyslogd -f "$SYSLOG_CONF"
+    sudo rsyslogd -f "$SYSLOG_CONF" &
 fi
 
 if [[ "$CLOUDFLARE" ]]; then
@@ -340,7 +349,7 @@ grep -q 'pymc_repeater' "$CONFIG_FILE" && sed -i 's|pymc_repeater|openhop_repeat
 echo "docker-entrypoint.sh starting app"
 # Now run the application
 #exec "$@"
-if [[ "$SYSLOG" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+$ ]]; then
+if [[ "$SYSLOG" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*(:[0-9]+)?$ ]]; then
     LOG_TAG="${NODE_NAME}"
     echo "Logging to syslog as $LOG_TAG"
     openhop-repeater 2>&1 | logger -t "$LOG_TAG"
